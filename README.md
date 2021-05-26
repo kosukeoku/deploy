@@ -74,7 +74,7 @@ Default output format [None]: json
  ```
 　ビルド手順の追加、シェルの実行を選択しシェルスクリプトに以下を記入
  ```
- sudo -u ec2-user aws cloudformation create-stack \
+sudo -u ec2-user aws cloudformation create-stack \
 --stack-name $APPNAME \
 --template-body file://$WORKSPACE/app-template.yml \
 --parameters ParameterKey='PJPrefix',ParameterValue=$APPNAME \
@@ -85,4 +85,52 @@ sudo -u ec2-user aws cloudformation wait stack-create-complete --stack-name $APP
  ```
 　
  ### 2. Ansibleのジョブを作成する
-　　
+ 
+ pemファイルをjenkinsサーバーにアップロードする.   
+ ```
+ scp -i ~/.ssh/<pemファイル> <アップロードするpemファイル> ec2-user@<デプロイするEC2のパブリックIP>:/home/ec2-user/.ssh/
+ ```
+ 
+ GitHubでSSH接続するために公開鍵・秘密鍵を生成する
+ ```
+ cd ~/.ssh/
+ ssh-keygen -t rsa
+ ```
+ execute_ansibleを入力しフリースタイルプロジェクトのビルドを選択しOK.   
+ ジョブを作成後にワークスペースに移動.   
+ ```
+ cd /var/lib/jenkins/workspace/execute_ansible
+ ```
+ ワークスペースでリポジトリをクローン
+ ```
+ git clone https://github.com/kosukeoku/ansible.git
+ ```
+ ansibleの設定は https://github.com/kosukeoku/ansible.git のREADMEに記載済み. 
+ ※private.ymlにはdb,ec2-ipはjenkinsから自動入力するので書かなくて良い. 
+ 作成した変数ファイルを暗号化する
+ ```
+ ansible-vault encrypt private.yml
+ ```
+ Jenkinsでexecute_ansibleの設定をクリックする。    
+ ビルド環境⇨秘密ファイルや秘密テキストを使用する
+ ```
+ #ユーザー名変数
+ RDS_USER
+ #パスワード変数
+ RDS_PASS
+ #RDSの認証情報を選択
+ ```
+ビルドのシェルスクリプトには以下を入力する
+``` 
+ansible-vault decrypt private.yml
+EC2_IP=`aws ec2 describe-instances --filter "Name=tag:Name,Values=$APPNAME-ec2-instance" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].[PublicIpAddress]" --output text`
+sed -i "s/\(HostName\)\(.*\)/\1\ $EC2_IP/" ~/.ssh/config
+sed -i "s/\(ec2_ip:\)\(.*\)/\1\ $EC2_IP/" /var/lib/jenkins/workspace/execute_ansible/private.yml
+RDS_ENDPOINT=`aws rds describe-db-instances --db-instance-identifier $APPNAME-rds-instance --query "DBInstances[].[Endpoint.Address]" --output text`
+sed -i "s/\(db_host:\)\(.*\)/\1\ $RDS_ENDPOINT/" /var/lib/jenkins/workspace/execute_ansible/private.yml
+sed -i "s/\(db_username:\)\(.*\)/\1\ $RDS_USER/" /var/lib/jenkins/workspace/execute_ansible/private.yml
+sed -i "s/\(db_password:\)\(.*\)/\1\ $RDS_PASS/" /var/lib/jenkins/workspace/execute_ansible/private.yml
+ansible-vault encrypt private.yml
+ansible-playbook -i inventory site.yml
+```
+　 ### 2. Serverspecのジョブを作成する
