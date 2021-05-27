@@ -122,6 +122,7 @@ sudo -u ec2-user aws cloudformation wait stack-create-complete --stack-name $APP
  ```
 ビルドのシェルスクリプトには以下を入力する
 ``` 
+cd $WORKSPACE
 ansible-vault decrypt private.yml
 EC2_IP=`aws ec2 describe-instances --filter "Name=tag:Name,Values=$APPNAME-ec2-instance" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].[PublicIpAddress]" --output text`
 sed -i "s/\(HostName\)\(.*\)/\1\ $EC2_IP/" ~/.ssh/config
@@ -133,4 +134,42 @@ sed -i "s/\(db_password:\)\(.*\)/\1\ $RDS_PASS/" /var/lib/jenkins/workspace/exec
 ansible-vault encrypt private.yml
 ansible-playbook -i inventory site.yml
 ```
-　 ### 2. Serverspecのジョブを作成する
+
+### 3. Serverspecのジョブを作成する
+ 
+ execute_serverspecを入力しフリースタイルプロジェクトのビルドを選択しOK.   
+ 
+ rbenvのインストール
+```
+git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+source ~/.bash_profile
+```
+ruby-buildのインストール
+```
+git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+cd ~/.rbenv/plugins/ruby-build
+sudo ./install.sh
+rbenv install -l
+```
+
+Rubyのインストール
+```
+sudo yum -y install gcc-c++ glibc-headers openssl-devel readline libyaml-devel readline-devel zlib zlib-devel libffi-devel libxml2 libxslt libxml2-devel libxslt-devel sqlite-devel
+rbenv install 2.7.3
+rbenv global 2.7.3
+```
+
+Serverspecのインストール、初期設定
+```
+cd /var/lib/jenkins/workspace/execute-serverspec
+gem install serverspec
+git clone https://github.com/kosukeoku/serverspec.git .
+```
+ Jenkinsでexecute_ansibleの設定をクリックする。    
+ ビルドのシェルスクリプトに以下を入力
+ ```
+ cd $WORKSPACE
+  /home/ec2-user/.rbenv/shims/rake spec
+ ```
