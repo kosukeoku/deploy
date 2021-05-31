@@ -1,6 +1,16 @@
 # ポートフォリオ
-　CI、CDツールであるJenkinsを用いて自動インフラ構築、自動デプロイ、自動テストを実践する
+　CI、CDツールであるJenkinsを用いて自動インフラ構築、自動デプロイ、自動テストを実践する. 
 
+## 使用するコード. 
+  Cloudformation.    
+  https://github.com/kosukeoku/cloudformation.git
+  
+  Ansible.   
+  https://github.com/kosukeoku/ansible.git
+  
+  Serverspec.   
+  https://github.com/kosukeoku/serverspec.git
+  
 # 使い方
 ### 1. Jenkins実行用サーバーを構築
 　CFnのテンプレートをGitクローンする
@@ -14,6 +24,7 @@ git clone　https://github.com/kosukeoku/cloudformation.git
 ```
 ssh -i {ペアキー} ec2-user@{パブリックIPアドレス}
 ```
+gitをインストールする
 ```
 sudo yum install git
 ```
