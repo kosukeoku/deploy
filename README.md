@@ -1,7 +1,7 @@
 # ポートフォリオ
-　CI、CDツールであるJenkinsを用いて自動インフラ構築、自動デプロイ、自動テストを実践する. 
+　CI、CDツールであるJenkinsを用いてCloudformationによる自動インフラ構築、Ansibleによる自動デプロイ、Serverspecによる自動テストを実践する. 
 
-## 使用するコード. 
+## 使用するコード　　 
   Cloudformation.    
   https://github.com/kosukeoku/cloudformation.git
   
