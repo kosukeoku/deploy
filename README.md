@@ -57,7 +57,7 @@ Default output format [None]: json
 　　①Jenkins のホーム ページで [Jenkinsの管理]  
 　　②[システムの設定]   
 　　③[グローバル プロパティ] セクションで、[環境変数] をオンにします。    
-　　④[追加] をクリックし、キーにAPP_NAME、値にアプリの名前を入力.   
+　　④[追加] をクリックし、キーにAPPNAME、値にアプリの名前を入力.   
 
 　GitとRDS認証情報の追加.   
 　　①Jenkins のホーム ページで [Jenkinsの管理]  
@@ -115,7 +115,7 @@ sudo -u ec2-user aws cloudformation wait stack-create-complete --stack-name $APP
  ```
  ワークスペースでリポジトリをクローン
  ```
- git clone https://github.com/kosukeoku/ansible.git
+ git clone https://github.com/kosukeoku/ansible.git .
  ```
  ansibleの設定は https://github.com/kosukeoku/ansible.git のREADMEに記載済み. 
  ※private.ymlにはdb,ec2-ipはjenkinsから自動入力するので書かなくて良い. 
