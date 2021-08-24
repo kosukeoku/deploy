@@ -1,6 +1,6 @@
-# ポートフォリオ
-　　これはrails(API)+reactアプリを自動でec2上にデプロイする手順を記したものである。
- CI、CDツールであるJenkinsを用いてCloudformationによる自動インフラ構築、Ansibleによる自動デプロイ、Serverspecによる自動テストを実践する. 
+# デプロイ手順
+これはrails(API)+reactアプリを自動でec2上にデプロイする手順を記したものである。
+CI、CDツールであるJenkinsを用いてCloudformationによる自動インフラ構築、Ansibleによる自動デプロイ、Serverspecによる自動テストを実践する. 
 
 ## 使用するコード　　 
   Cloudformation.    
